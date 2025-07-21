@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
 
                 Surface(
                     modifier = Modifier
-                        .safeDrawingPadding()
                         .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
