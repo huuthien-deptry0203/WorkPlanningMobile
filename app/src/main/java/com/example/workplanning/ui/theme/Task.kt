@@ -1,5 +1,8 @@
 package com.example.workplanning
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Task(
     val id: String,
     val title: String,

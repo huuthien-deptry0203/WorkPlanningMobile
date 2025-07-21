@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.workplanning.ui.screens.*
+import com.example.workplanning.ui.theme.TaskViewModelFactory
 import com.example.workplanning.viewmodel.TaskViewModel
 import com.example.workplanning.ui.theme.WorkPlanningTheme
 
@@ -24,7 +25,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             WorkPlanningTheme {
                 val navController = rememberNavController()
-                val viewModel: TaskViewModel = viewModel() // ✅ đúng cách
+                val viewModel: TaskViewModel = viewModel(
+                    factory = TaskViewModelFactory(context = applicationContext)
+                )
 
                 Surface(
                     modifier = Modifier
