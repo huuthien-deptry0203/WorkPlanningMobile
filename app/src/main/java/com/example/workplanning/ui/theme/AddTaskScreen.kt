@@ -1,21 +1,20 @@
 package com.example.workplanning.ui.screens
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.widget.DatePicker
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -27,32 +26,44 @@ import androidx.navigation.NavHostController
 import com.example.workplanning.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarToday
-
 
 @Composable
 fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
     val context = LocalContext.current
     val calendar = remember { Calendar.getInstance() }
-    val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-    var date by remember { mutableStateOf("") }
+    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+
+    var deadline by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var error by remember { mutableStateOf("") }
 
-    val datePickerDialog = remember {
+    // Hàm mở DatePicker rồi đến TimePicker
+    fun showDateTimePicker() {
         DatePickerDialog(
             context,
             { _: DatePicker, y: Int, m: Int, d: Int ->
-                calendar.set(y, m, d)
-                date = format.format(calendar.time)
+                calendar.set(Calendar.YEAR, y)
+                calendar.set(Calendar.MONTH, m)
+                calendar.set(Calendar.DAY_OF_MONTH, d)
+
+                TimePickerDialog(
+                    context,
+                    { _, hour: Int, minute: Int ->
+                        calendar.set(Calendar.HOUR_OF_DAY, hour)
+                        calendar.set(Calendar.MINUTE, minute)
+                        deadline = formatter.format(calendar.time)
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true
+                ).show()
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
-        )
+        ).show()
     }
 
     Box(
@@ -86,7 +97,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                     label = { Text("Tên công việc", color = Color.White.copy(alpha = 0.9f)) },
                     textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth(), // No clip
+                    modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(0.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = Color.White,
@@ -99,24 +110,23 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
 
             item {
                 OutlinedTextField(
-                    value = date,
+                    value = deadline,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Hạn công việc", color = Color.White.copy(alpha = 0.9f)) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.CalendarToday,
-                            contentDescription = "Chọn ngày",
+                            contentDescription = "Chọn ngày giờ",
                             tint = Color.White,
                             modifier = Modifier
                                 .padding(start = 4.dp)
-                                .clickable {
-                                    datePickerDialog.show()
-                                }
+                                .clickable { showDateTimePicker() }
                         )
                     },
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .clickable { showDateTimePicker() },
                     textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
                     shape = RoundedCornerShape(0.dp),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -125,12 +135,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                         cursorColor = Color.White
                     )
                 )
-
-
-
-
-
-
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             item {
@@ -140,7 +145,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                     label = { Text("Mô tả công việc", color = Color.White.copy(alpha = 0.9f)) },
                     textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(0.dp), // No corner radius
+                    shape = RoundedCornerShape(0.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = Color.White,
                         focusedBorderColor = Color.White,
@@ -160,14 +165,11 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
             item {
                 Button(
                     onClick = {
-                        val dateRegex = Regex("\\d{4}-\\d{2}-\\d{2}")
-                        if (title.isBlank() || date.isBlank()) {
-                            error = "Vui lòng nhập đầy đủ tên và ngày"
-                        } else if (!date.matches(dateRegex)) {
-                            error = "Ngày không đúng định dạng YYYY-MM-DD"
+                        if (title.isBlank() || deadline.isBlank()) {
+                            error = "Vui lòng nhập đầy đủ tên và hạn công việc"
                         } else {
                             error = ""
-                            viewModel.addTask(title, date, description)
+                            viewModel.addTask(title, deadline, description)
                             navController.popBackStack()
                         }
                     },
