@@ -14,11 +14,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.workplanning.ui.theme.UserViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen(navController: NavHostController) {
+fun RegisterScreen(navController: NavHostController,  userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -101,6 +102,14 @@ fun RegisterScreen(navController: NavHostController) {
                             errorMessage = "Mật khẩu không khớp"
                             return@Button
                         }
+
+                        val success = userViewModel.register(username, password)
+                        if (!success) {
+                            isError = true
+                            errorMessage = "Tên người dùng đã tồn tại"
+                            return@Button
+                        }
+
                         isLoading = true
                         isError = false
                         scope.launch {

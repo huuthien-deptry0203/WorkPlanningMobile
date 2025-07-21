@@ -14,11 +14,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.workplanning.ui.theme.UserViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -76,14 +77,17 @@ fun LoginScreen(navController: NavHostController) {
                         isLoading = true
                         isError = false
                         scope.launch {
-                            delay(1500)
-                            if (username == "admin" && password == "1234") {
+                            delay(1000)
+
+                            val success = userViewModel.login(username, password)
+                            if (success) {
                                 navController.navigate("home") {
                                     popUpTo("login") { inclusive = true }
                                 }
                             } else {
                                 isError = true
                             }
+
                             isLoading = false
                         }
                     },
@@ -91,6 +95,7 @@ fun LoginScreen(navController: NavHostController) {
                 ) {
                     Text("Login")
                 }
+
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(

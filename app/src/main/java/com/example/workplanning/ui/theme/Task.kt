@@ -11,7 +11,7 @@ data class Task(
     val isDone: Boolean = false
 )
 
-
+@Serializable
 data class User(
     val username: String,
     val password: String
