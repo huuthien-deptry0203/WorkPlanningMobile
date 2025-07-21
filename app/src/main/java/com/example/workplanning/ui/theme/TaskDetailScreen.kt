@@ -42,7 +42,6 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
     val context = LocalContext.current
     val interactionSource = remember { MutableInteractionSource() }
 
-    // Time Picker
     fun showTimePicker(onTimeSelected: () -> Unit) {
         TimePickerDialog(
             context,
@@ -58,7 +57,6 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
         ).show()
     }
 
-    // Date Picker
     val datePickerDialog = DatePickerDialog(
         context,
         { _: DatePicker, y: Int, m: Int, d: Int ->
@@ -71,10 +69,12 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
     )
 
     task?.let {
+        val colorScheme = MaterialTheme.colorScheme
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Brush.verticalGradient(listOf(Color(0xFFFBD3E9), Color(0xFFBB377D))))
+                .background(colorScheme.background)
         ) {
             Column(
                 modifier = Modifier
@@ -85,29 +85,29 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Description, contentDescription = null, tint = Color.White)
+                    Icon(Icons.Default.Description, contentDescription = null, tint = colorScheme.primary)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Chỉnh sửa công việc",
                         fontSize = 26.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = colorScheme.onBackground
                     )
                 }
 
                 OutlinedTextField(
                     value = editedTitle,
                     onValueChange = { editedTitle = it },
-                    label = { Text("Tên công việc", color = Color.White.copy(alpha = 0.9f)) },
+                    label = { Text("Tên công việc") },
                     modifier = Modifier.fillMaxWidth(0.9f),
-                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    textStyle = LocalTextStyle.current.copy(color = colorScheme.onBackground),
                     leadingIcon = {
-                        Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White)
+                        Icon(Icons.Default.Edit, contentDescription = null, tint = colorScheme.primary)
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.White,
-                        cursorColor = Color.White
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.outline,
+                        cursorColor = colorScheme.primary
                     )
                 )
 
@@ -115,48 +115,45 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
                     value = editedDate,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Hạn công việc", color = Color.White.copy(alpha = 0.9f)) },
+                    label = { Text("Hạn công việc") },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.CalendarToday,
                             contentDescription = "Chọn ngày giờ",
-                            tint = Color.White,
+                            tint = colorScheme.primary,
                             modifier = Modifier.clickable { datePickerDialog.show() }
                         )
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) {
+                        .clickable(interactionSource = interactionSource, indication = null) {
                             datePickerDialog.show()
                         },
-                    textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
+                    textStyle = TextStyle(color = colorScheme.onBackground, fontSize = 18.sp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.White,
-                        cursorColor = Color.White
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.outline,
+                        cursorColor = colorScheme.primary
                     )
                 )
 
                 OutlinedTextField(
                     value = editedDescription,
                     onValueChange = { editedDescription = it },
-                    label = { Text("Mô tả công việc", color = Color.White.copy(alpha = 0.9f)) },
+                    label = { Text("Mô tả công việc") },
                     leadingIcon = {
-                        Icon(Icons.Default.Notes, contentDescription = null, tint = Color.White)
+                        Icon(Icons.Default.Notes, contentDescription = null, tint = colorScheme.primary)
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
                         .height(120.dp),
-                    textStyle = LocalTextStyle.current.copy(color = Color.White),
+                    textStyle = LocalTextStyle.current.copy(color = colorScheme.onBackground),
                     shape = MaterialTheme.shapes.small,
                     maxLines = Int.MAX_VALUE,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.White,
-                        cursorColor = Color.White
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.outline,
+                        cursorColor = colorScheme.primary
                     )
                 )
 
@@ -167,9 +164,9 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
                     Checkbox(
                         checked = isDone,
                         onCheckedChange = { isDone = it },
-                        colors = CheckboxDefaults.colors(checkedColor = Color.White)
+                        colors = CheckboxDefaults.colors(checkedColor = colorScheme.primary)
                     )
-                    Text("Đã hoàn thành", color = Color.White)
+                    Text("Đã hoàn thành", color = colorScheme.onBackground)
                 }
 
                 Button(
@@ -177,12 +174,12 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
                         viewModel.updateTask(task.id, editedTitle, editedDate, editedDescription, isDone)
                         navController.popBackStack()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.primary),
                     modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
-                    Icon(Icons.Default.Save, contentDescription = null, tint = Color.White)
+                    Icon(Icons.Default.Save, contentDescription = null, tint = colorScheme.onPrimary)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Lưu thay đổi", color = Color.White)
+                    Text("Lưu thay đổi", color = colorScheme.onPrimary)
                 }
 
                 Button(
@@ -190,14 +187,15 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
                         viewModel.deleteTask(task.id)
                         navController.popBackStack()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.error),
                     modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White)
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = colorScheme.onError)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Xoá công việc", color = Color.White)
+                    Text("Xoá công việc", color = colorScheme.onError)
                 }
             }
         }
     }
 }
+

@@ -2,43 +2,62 @@ package com.example.workplanning.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Pending
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.workplanning.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
-import java.util.*
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.ui.text.style.TextOverflow
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
     val tasks = viewModel.todayTasks.collectAsState().value
     val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    val isDark = isSystemInDarkTheme()
+
+    val gradientColors = if (isDark) {
+        listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
+    } else {
+        listOf(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.secondaryContainer)
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(listOf(Color(0xFF00C9FF), Color(0xFF92FE9D)))
-            ),
+            .background(Brush.verticalGradient(gradientColors)),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
@@ -51,7 +70,7 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                 Icon(
                     imageVector = Icons.Default.CalendarToday,
                     contentDescription = "Calendar Icon",
-                    tint = Color.White,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(28.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -59,7 +78,7 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                     text = "Công việc của tôi",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
@@ -74,11 +93,14 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
             ) {
                 items(tasks) { task ->
                     val isOverdue = !task.isDone && task.date < currentDate
+
                     val cardColor = when {
-                        task.isDone -> Color(0xFFB2FFB2) // Xanh lá nhạt
-                        isOverdue -> Color(0xFFFFCDD2)   // Đỏ nhạt
-                        else -> Color.White              // Trắng
+                        task.isDone -> MaterialTheme.colorScheme.tertiaryContainer
+                        isOverdue -> MaterialTheme.colorScheme.errorContainer
+                        else -> MaterialTheme.colorScheme.surface
                     }
+
+                    val textColor = MaterialTheme.colorScheme.onSurface
 
                     Card(
                         modifier = Modifier
@@ -90,17 +112,17 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(task.title, fontSize = 20.sp, color = Color.Black)
+                            Text(task.title, fontSize = 20.sp, color = textColor)
                             Spacer(modifier = Modifier.height(4.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.CalendarToday,
                                     contentDescription = "Due Date",
-                                    tint = Color.Gray,
+                                    tint = MaterialTheme.colorScheme.outline,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(task.date, fontSize = 14.sp, color = Color.DarkGray)
+                                Text(task.date, fontSize = 14.sp, color = MaterialTheme.colorScheme.outline)
                             }
 
                             Spacer(modifier = Modifier.height(4.dp))
@@ -113,8 +135,11 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                                     isOverdue -> "ĐÃ QUÁ HẠN"
                                     else -> "Chưa hoàn thành"
                                 }
-                                val statusColor = if (task.isDone) Color(0xFF2E7D32)
-                                else if (isOverdue) Color.Red else Color.Gray
+                                val statusColor = when {
+                                    task.isDone -> MaterialTheme.colorScheme.tertiary
+                                    isOverdue -> MaterialTheme.colorScheme.error
+                                    else -> MaterialTheme.colorScheme.outline
+                                }
 
                                 Icon(
                                     imageVector = statusIcon,
@@ -137,9 +162,6 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
-// ...
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth(0.9f),
@@ -148,38 +170,33 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                 Button(
                     onClick = { navController.navigate("addTask") },
                     modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Thêm", tint = Color.White)
+                    Icon(Icons.Default.Add, contentDescription = "Thêm", tint = MaterialTheme.colorScheme.onPrimary)
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         "Thêm công việc",
                         fontSize = 10.sp,
-                        color = Color.White,
-                        maxLines = 1,
-                        overflow = TextOverflow.Clip // tránh xuống dòng
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        maxLines = 1
                     )
                 }
 
                 Button(
                     onClick = { navController.navigate("stats") },
                     modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3))
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Default.BarChart, contentDescription = "Thống kê", tint = Color.White)
+                    Icon(Icons.Default.BarChart, contentDescription = "Thống kê", tint = MaterialTheme.colorScheme.onPrimary)
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         "Thống kê",
                         fontSize = 10.sp,
-                        color = Color.White,
-                        maxLines = 1,
-                        overflow = TextOverflow.Clip
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        maxLines = 1
                     )
                 }
             }
-
         }
     }
 }

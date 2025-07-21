@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
@@ -14,11 +13,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.workplanning.ui.screens.*
+import com.example.workplanning.ui.screens.AddTaskScreen
+import com.example.workplanning.ui.screens.HomeScreen
+import com.example.workplanning.ui.screens.LoginScreen
+import com.example.workplanning.ui.screens.RegisterScreen
+import com.example.workplanning.ui.screens.StatsScreen
+import com.example.workplanning.ui.screens.TaskDetailScreen
 import com.example.workplanning.ui.theme.TaskViewModelFactory
 import com.example.workplanning.ui.theme.UserViewModel
-import com.example.workplanning.viewmodel.TaskViewModel
 import com.example.workplanning.ui.theme.WorkPlanningTheme
+import com.example.workplanning.viewmodel.TaskViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +38,6 @@ class MainActivity : ComponentActivity() {
 
                 Surface(
                     modifier = Modifier
-                        .safeDrawingPadding()
                         .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {

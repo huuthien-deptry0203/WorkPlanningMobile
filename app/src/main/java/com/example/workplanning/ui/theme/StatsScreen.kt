@@ -12,7 +12,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
@@ -26,7 +25,6 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 
-
 @Composable
 fun StatsScreen(viewModel: TaskViewModel) {
     val tasks = viewModel.todayTasks.collectAsState().value
@@ -39,53 +37,66 @@ fun StatsScreen(viewModel: TaskViewModel) {
 
     val overdueTasks = tasks.filter {
         !it.isDone && runCatching {
-            LocalDate.parse(it.date, formatter).isBefore(today)
+            LocalDate.parse(it.date.substring(0, 10)).isBefore(today)
         }.getOrDefault(false)
     }
+
+    val colorScheme = MaterialTheme.colorScheme
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(listOf(Color(0xFF74EBD5), Color(0xFFACB6E5)))
-            ),
+            .background(colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
-                .padding(24.dp),
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.BarChart, contentDescription = null, tint = Color.White)
+                Icon(Icons.Default.BarChart, contentDescription = null, tint = colorScheme.primary)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "Thống kê công việc",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = colorScheme.onBackground
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Check, contentDescription = null, tint = Color.White)
+                Icon(Icons.Default.Check, contentDescription = null, tint = colorScheme.primary)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Đã hoàn thành: $completed", color = Color.White, fontSize = 18.sp)
+                Text(
+                    "Đã hoàn thành: $completed",
+                    color = colorScheme.primary,
+                    fontSize = 18.sp
+                )
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.AccessTime, contentDescription = null, tint = Color.White)
+                Icon(Icons.Default.AccessTime, contentDescription = null, tint = colorScheme.primary)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Chưa hoàn thành: $pending", color = Color.White, fontSize = 18.sp)
+                Text(
+                    "Chưa hoàn thành: $pending",
+                    color = colorScheme.onBackground,
+                    fontSize = 18.sp
+                )
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.BarChart, contentDescription = null, tint = Color.White)
+                Icon(Icons.Default.BarChart, contentDescription = null, tint = colorScheme.primary)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Tổng công việc: $total", color = Color.White, fontSize = 18.sp)
+                Text(
+                    "Tổng công việc: $total",
+                    color = colorScheme.onBackground,
+                    fontSize = 18.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -96,24 +107,29 @@ fun StatsScreen(viewModel: TaskViewModel) {
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Yellow)
+                Icon(Icons.Default.Warning, contentDescription = null, tint = colorScheme.tertiary)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    "Công việc quá hạn:",
+                    "Công việc quá hạn: ${overdueTasks.size}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = colorScheme.onBackground
                 )
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             if (overdueTasks.isEmpty()) {
-                Text("Không có công việc quá hạn", color = Color.White)
+                Text("Không có công việc quá hạn", color = colorScheme.outline)
             } else {
                 overdueTasks.forEach {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Warning, contentDescription = null, tint = Color.Red)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    ) {
+                        Icon(Icons.Default.Warning, contentDescription = null, tint = colorScheme.error)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("- ${it.title} (${it.date})", color = Color.Red)
+                        Text("${it.title} (${it.date})", color = colorScheme.error)
                     }
                 }
             }
@@ -125,23 +141,24 @@ fun StatsScreen(viewModel: TaskViewModel) {
 fun DonutChart(completed: Int, total: Int) {
     val percentage = completed.toFloat() / total
     val angle = percentage * 360f
+    val colorScheme = MaterialTheme.colorScheme
 
     Box(
         modifier = Modifier.size(160.dp),
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.size(160.dp)) {
-            // Vòng ngoài màu xám (toàn bộ)
+            // Vòng ngoài
             drawArc(
-                color = Color.LightGray,
+                color = colorScheme.surfaceVariant,
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
                 style = Stroke(width = 24f, cap = StrokeCap.Round)
             )
-            // Vòng hoàn thành màu xanh
+            // Vòng hoàn thành
             drawArc(
-                color = Color(0xFF4CAF50),
+                color = colorScheme.primary,
                 startAngle = -90f,
                 sweepAngle = angle,
                 useCenter = false,
@@ -152,7 +169,7 @@ fun DonutChart(completed: Int, total: Int) {
             text = "${(percentage * 100).toInt()}%",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = colorScheme.onBackground
         )
     }
 }
