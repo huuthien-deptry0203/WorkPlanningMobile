@@ -31,12 +31,13 @@ class TaskViewModel(private val context: Context) : ViewModel() {
 
     fun getTaskById(taskId: String): Task? = _tasks.value.find { it.id == taskId }
 
-    fun addTask(title: String, date: String, description: String) {
+    fun addTask(title: String, date: String, description: String, username: String) {
         val newTask = Task(
             id = UUID.randomUUID().toString(),
             title = title,
             date = date,
-            description = description
+            description = description,
+            username = username
         )
         _tasks.value = _tasks.value + newTask
         saveTasks()
