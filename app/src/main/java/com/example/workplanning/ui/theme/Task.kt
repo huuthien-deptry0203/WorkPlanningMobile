@@ -8,7 +8,8 @@ data class Task(
     val title: String,
     val date: String,
     val description: String = "",
-    val isDone: Boolean = false
+    val isDone: Boolean = false,
+    val username: String
 )
 
 @Serializable

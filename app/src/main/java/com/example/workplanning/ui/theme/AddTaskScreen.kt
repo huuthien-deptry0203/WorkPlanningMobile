@@ -29,10 +29,15 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
+import com.example.workplanning.ui.theme.UserViewModel
 
 
 @Composable
-fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
+fun AddTaskScreen(
+    viewModel: TaskViewModel,
+    navController: NavHostController,
+    userViewModel: UserViewModel
+) {
     val context = LocalContext.current
     val calendar = remember { Calendar.getInstance() }
     val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -125,12 +130,6 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                         cursorColor = Color.White
                     )
                 )
-
-
-
-
-
-
             }
 
             item {
@@ -161,13 +160,17 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                 Button(
                     onClick = {
                         val dateRegex = Regex("\\d{4}-\\d{2}-\\d{2}")
-                        if (title.isBlank() || date.isBlank()) {
+                        val username = userViewModel.currentUsername
+
+                        if (username == null) {
+                            error = "Bạn chưa đăng nhập!"
+                        } else if (title.isBlank() || date.isBlank()) {
                             error = "Vui lòng nhập đầy đủ tên và ngày"
                         } else if (!date.matches(dateRegex)) {
                             error = "Ngày không đúng định dạng YYYY-MM-DD"
                         } else {
                             error = ""
-                            viewModel.addTask(title, date, description)
+                            viewModel.addTask(title, date, description, username)
                             navController.popBackStack()
                         }
                     },

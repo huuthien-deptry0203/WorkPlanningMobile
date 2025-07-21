@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
@@ -26,12 +27,27 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.workplanning.ui.theme.UserViewModel
 
 @Composable
-fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
-    val tasks = viewModel.todayTasks.collectAsState().value
+fun HomeScreen(
+    taskViewModel: TaskViewModel,
+    userViewModel: UserViewModel,
+    navController: NavHostController
+) {
+    val username = userViewModel.currentUsername
+
+    val todayTasks = taskViewModel.todayTasks.collectAsState().value
+    val tasks = todayTasks.filter { it.username == username }
     val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+    if (username == null) {
+        Text("Vui lòng đăng nhập!", color = Color.Red, modifier = Modifier.padding(16.dp))
+        return
+    }
 
     Box(
         modifier = Modifier
@@ -158,9 +174,11 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                         fontSize = 10.sp,
                         color = Color.White,
                         maxLines = 1,
-                        overflow = TextOverflow.Clip // tránh xuống dòng
+                        overflow = TextOverflow.Clip
                     )
                 }
+
+                Spacer(modifier = Modifier.width(6.dp))
 
                 Button(
                     onClick = { navController.navigate("stats") },
@@ -178,6 +196,26 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                         overflow = TextOverflow.Clip
                     )
                 }
+            }
+
+            Button(
+                onClick = {
+                    userViewModel.logout()
+                    navController.navigate("login") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                },
+                modifier = Modifier.width(140.dp),
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Logout,
+                    contentDescription = "Đăng xuất",
+                    tint = Color.White
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Đăng xuất", fontSize = 12.sp, color = Color.White)
             }
 
         }
