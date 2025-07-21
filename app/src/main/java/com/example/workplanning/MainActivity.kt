@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     NavHost(navController = navController, startDestination = "login") {
+                        // Login
                         composable("login") {
                             LoginScreen(navController, userViewModel)
                         }
