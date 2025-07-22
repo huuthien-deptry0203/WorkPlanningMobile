@@ -36,21 +36,34 @@ import androidx.compose.ui.unit.sp
 import com.example.workplanning.viewmodel.TaskViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Icon
+import com.example.workplanning.ui.theme.UserViewModel
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.util.Date
+import java.util.Locale
 
 @Composable
-fun StatsScreen(viewModel: TaskViewModel) {
+fun StatsScreen(
+    viewModel: TaskViewModel,
+    userViewModel: UserViewModel
+) {
+    val currentUsername = userViewModel.currentUsername
     val tasks = viewModel.todayTasks.collectAsState().value
+        .filter { it.username == currentUsername }
+
     val completed = tasks.count { it.isDone }
     val pending = tasks.size - completed
     val total = tasks.size
 
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-    val today = LocalDate.now()
-
+    val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
     val overdueTasks = tasks.filter {
-        !it.isDone && runCatching {
-            LocalDate.parse(it.date.substring(0, 10)).isBefore(today)
-        }.getOrDefault(false)
+        !it.isDone && it.date < currentDate
     }
 
     val mauNen = listOf(
@@ -123,8 +136,11 @@ fun StatsScreen(viewModel: TaskViewModel) {
                 Spacer(modifier = Modifier.height(32.dp))
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Warning, contentDescription = null, tint = textColor)
+
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "Công việc quá hạn: ${overdueTasks.size}",
@@ -147,6 +163,7 @@ fun StatsScreen(viewModel: TaskViewModel) {
                         Icon(Icons.Default.Warning, contentDescription = null, tint = colorScheme.error)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("${it.title} (${it.date})", color = colorScheme.error)
+
                     }
                 }
             }

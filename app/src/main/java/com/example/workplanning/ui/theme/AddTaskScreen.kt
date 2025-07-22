@@ -41,9 +41,18 @@ import com.example.workplanning.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
+import com.example.workplanning.ui.theme.UserViewModel
+
 
 @Composable
-fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
+fun AddTaskScreen(
+    viewModel: TaskViewModel,
+    navController: NavHostController,
+    userViewModel: UserViewModel
+) {
     val context = LocalContext.current
     val colorScheme = MaterialTheme.colorScheme
 
@@ -191,14 +200,18 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
             item {
                 Button(
                     onClick = {
-                        val dateRegex = Regex("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}")
-                        if (title.isBlank() || date.isBlank()) {
-                            error = "Vui lòng nhập đầy đủ tên và hạn công việc"
+                        val dateRegex = Regex("\\d{4}-\\d{2}-\\d{2}")
+                        val username = userViewModel.currentUsername
+
+                        if (username == null) {
+                            error = "Bạn chưa đăng nhập!"
+                        } else if (title.isBlank() || date.isBlank()) {
+                            error = "Vui lòng nhập đầy đủ tên và ngày"
                         } else if (!date.matches(dateRegex)) {
                             error = "Ngày không đúng định dạng YYYY-MM-DD HH:mm"
                         } else {
                             error = ""
-                            viewModel.addTask(title, date, description)
+                            viewModel.addTask(title, date, description, username)
                             navController.popBackStack()
                         }
                     },
