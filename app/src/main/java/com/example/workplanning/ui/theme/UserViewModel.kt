@@ -6,11 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.workplanning.User
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 
 class UserViewModel(private val context: Context) : ViewModel() {
     private var users: MutableList<User> = UserStorage.loadUsers(context).toMutableList()
@@ -39,11 +37,6 @@ class UserViewModel(private val context: Context) : ViewModel() {
         return true
     }
 
-//    fun login(username: String, password: String): Boolean {
-//        currentUsername = username
-//        return users.any { it.username == username && it.password == password }
-//    }
-
     fun login(username: String, password: String): Boolean {
         val userExists = users.any { it.username == username && it.password == password }
         if (userExists) {
@@ -54,10 +47,6 @@ class UserViewModel(private val context: Context) : ViewModel() {
         }
         return userExists
     }
-
-//    fun logout() {
-//        currentUsername = null
-//    }
 
     fun logout() {
         currentUsername = null

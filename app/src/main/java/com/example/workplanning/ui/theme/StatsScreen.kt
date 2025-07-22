@@ -1,4 +1,4 @@
-package com.example.workplanning.ui.screens
+package com.example.workplanning.ui.theme
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,18 +32,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.workplanning.viewmodel.TaskViewModel
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Icon
-import com.example.workplanning.ui.theme.UserViewModel
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.Date
 import java.util.Locale
 
@@ -175,7 +163,7 @@ fun StatsScreen(
 fun DonutChart(completed: Int, total: Int) {
     val percentage = completed.toFloat() / total
     val angle = percentage * 360f
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme = colorScheme
 
     Box(
         modifier = Modifier.size(160.dp),

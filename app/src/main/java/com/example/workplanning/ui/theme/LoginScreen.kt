@@ -1,4 +1,4 @@
-package com.example.workplanning.ui.screens
+package com.example.workplanning.ui.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,7 +31,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.workplanning.ui.theme.UserViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -43,7 +42,6 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
     var isError by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val colorScheme = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
 
     val mauNen = listOf(
         colorScheme.surface,
@@ -52,15 +50,13 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
 
     )
 
-
     Surface(
         modifier = Modifier.fillMaxSize(),
-
     ) {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .background(Brush.verticalGradient(mauNen)),
-
             contentAlignment = Alignment.Center
         ) {
             if (isLoading) {
@@ -84,7 +80,11 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
                     OutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
-                        label = { Text("Username", color = colorScheme.primary) },
+                        label = {
+                            Text(
+                                "Username",
+                                color = colorScheme.primary
+                            ) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -100,9 +100,11 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Password",
-                            color = colorScheme.primary
-                        )},
+                        label = {
+                            Text(
+                                "Password",
+                                color = colorScheme.primary
+                            ) },
                         visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
@@ -117,7 +119,11 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
                     Spacer(modifier = Modifier.height(24.dp))
 
                     if (isError) {
-                        Text("Sai tài khoản hoặc mật khẩu!", color = colorScheme.error)
+                        Text(
+                            "Sai tài khoản hoặc mật khẩu!",
+                            color = colorScheme.error
+                        )
+
                         Spacer(modifier = Modifier.height(8.dp))
                     }
 
@@ -128,6 +134,7 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
                             scope.launch {
                                 delay(1000)
                                 val success = userViewModel.login(username, password)
+
                                 if (success) {
                                     navController.navigate("home") {
                                         popUpTo("login") { inclusive = true }
@@ -139,9 +146,15 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = colorScheme.secondary)
+                        colors = ButtonDefaults
+                            .buttonColors(
+                                containerColor = colorScheme.secondary
+                            )
                     ) {
-                        Text("Login", color = colorScheme.primary)
+                        Text(
+                            "Login",
+                            color = colorScheme.primary
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -149,7 +162,10 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
                     Text(
                         "Chưa có tài khoản? Đăng ký",
                         color = colorScheme.primary,
-                        modifier = Modifier.clickable { navController.navigate("register") }
+                        modifier = Modifier
+                            .clickable {
+                                navController.navigate("register")
+                            }
                     )
                 }
             }

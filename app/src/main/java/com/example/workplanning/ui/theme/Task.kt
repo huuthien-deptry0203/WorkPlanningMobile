@@ -1,4 +1,4 @@
-package com.example.workplanning
+package com.example.workplanning.ui.theme
 
 import kotlinx.serialization.Serializable
 
