@@ -6,13 +6,28 @@ import android.widget.DatePicker
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -24,7 +39,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.workplanning.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
@@ -41,6 +57,14 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
 
     var hour by remember { mutableStateOf(calendar.get(Calendar.HOUR_OF_DAY)) }
     var minute by remember { mutableStateOf(calendar.get(Calendar.MINUTE)) }
+
+
+    val mauNen = listOf(
+        MaterialTheme.colorScheme.surface,
+        MaterialTheme.colorScheme.background,
+        MaterialTheme.colorScheme.surface,
+    )
+    val textColor = MaterialTheme.colorScheme.primary
 
     val timePickerDialog = remember {
         TimePickerDialog(
@@ -72,7 +96,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorScheme.background),
+            .background(Brush.verticalGradient(mauNen)),
         contentAlignment = Alignment.TopCenter
     ) {
         LazyColumn(
@@ -85,7 +109,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                 Text(
                     "Thêm công việc mới",
                     fontSize = 26.sp,
-                    color = colorScheme.onBackground,
+                    color = textColor,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -95,16 +119,16 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Tên công việc") },
-                    textStyle = TextStyle(fontSize = 18.sp, color = colorScheme.onBackground),
+                    label = { Text("Tên công việc", color = textColor) },
+                    textStyle = TextStyle(fontSize = 18.sp, color = textColor),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = colorScheme.primary,
-                        unfocusedBorderColor = colorScheme.outline,
-                        cursorColor = colorScheme.primary,
-                        focusedLabelColor = colorScheme.primary
+                        focusedBorderColor = textColor,
+                        unfocusedBorderColor = textColor,
+                        cursorColor = textColor,
+                        focusedLabelColor = textColor
                     )
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -115,7 +139,7 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                     value = date,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Hạn công việc") },
+                    label = { Text("Hạn công việc", color = textColor) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.CalendarToday,
@@ -126,14 +150,14 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                             tint = colorScheme.primary
                         )
                     },
-                    textStyle = TextStyle(fontSize = 18.sp, color = colorScheme.onBackground),
+                    textStyle = TextStyle(fontSize = 18.sp, color = textColor),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = colorScheme.primary,
-                        unfocusedBorderColor = colorScheme.outline,
-                        cursorColor = colorScheme.primary,
-                        focusedLabelColor = colorScheme.primary
+                        focusedBorderColor = textColor,
+                        unfocusedBorderColor = textColor,
+                        cursorColor = textColor,
+                        focusedLabelColor = textColor
                     )
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -144,14 +168,14 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Mô tả công việc") },
-                    textStyle = TextStyle(fontSize = 16.sp, color = colorScheme.onBackground),
+                    textStyle = TextStyle(fontSize = 16.sp, color = textColor),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = colorScheme.primary,
-                        unfocusedBorderColor = colorScheme.outline,
-                        cursorColor = colorScheme.primary,
-                        focusedLabelColor = colorScheme.primary
+                        focusedBorderColor = textColor,
+                        unfocusedBorderColor = textColor,
+                        cursorColor = textColor,
+                        focusedLabelColor = textColor
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -179,10 +203,10 @@ fun AddTaskScreen(viewModel: TaskViewModel, navController: NavHostController) {
                         }
                     },
                     shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.primary),
+                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.secondary),
                     elevation = ButtonDefaults.elevatedButtonElevation(6.dp)
                 ) {
-                    Text("Thêm công việc", color = colorScheme.onPrimary)
+                    Text("Thêm công việc", color = textColor)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }

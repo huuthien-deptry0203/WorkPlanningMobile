@@ -2,7 +2,6 @@ package com.example.workplanning.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,10 +22,12 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Pending
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,18 +47,17 @@ import java.util.Locale
 fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
     val tasks = viewModel.todayTasks.collectAsState().value
     val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-    val isDark = isSystemInDarkTheme()
-
-    val gradientColors = if (isDark) {
-        listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
-    } else {
-        listOf(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.secondaryContainer)
-    }
+    val mauNen = listOf(
+        colorScheme.surface,
+        colorScheme.background,
+        colorScheme.surface,
+        )
+    val textColor = colorScheme.primary
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(gradientColors)),
+            .background(Brush.verticalGradient(mauNen)),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
@@ -70,7 +70,7 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                 Icon(
                     imageVector = Icons.Default.CalendarToday,
                     contentDescription = "Calendar Icon",
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -78,7 +78,7 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                     text = "Công việc của tôi",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = colorScheme.primary
                 )
             }
 
@@ -95,12 +95,12 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                     val isOverdue = !task.isDone && task.date < currentDate
 
                     val cardColor = when {
-                        task.isDone -> MaterialTheme.colorScheme.tertiaryContainer
-                        isOverdue -> MaterialTheme.colorScheme.errorContainer
-                        else -> MaterialTheme.colorScheme.surface
+                        task.isDone -> colorScheme.onBackground
+                        isOverdue -> colorScheme.onErrorContainer
+                        else -> colorScheme.secondary
                     }
 
-                    val textColor = MaterialTheme.colorScheme.onSurface
+
 
                     Card(
                         modifier = Modifier
@@ -118,11 +118,11 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                                 Icon(
                                     imageVector = Icons.Default.CalendarToday,
                                     contentDescription = "Due Date",
-                                    tint = MaterialTheme.colorScheme.outline,
+                                    tint = textColor,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(task.date, fontSize = 14.sp, color = MaterialTheme.colorScheme.outline)
+                                Text(task.date, fontSize = 14.sp, color = textColor)
                             }
 
                             Spacer(modifier = Modifier.height(4.dp))
@@ -136,9 +136,9 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                                     else -> "Chưa hoàn thành"
                                 }
                                 val statusColor = when {
-                                    task.isDone -> MaterialTheme.colorScheme.tertiary
-                                    isOverdue -> MaterialTheme.colorScheme.error
-                                    else -> MaterialTheme.colorScheme.outline
+                                    task.isDone -> colorScheme.onTertiary
+                                    isOverdue -> colorScheme.error
+                                    else -> textColor
                                 }
 
                                 Icon(
@@ -170,14 +170,18 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                 Button(
                     onClick = { navController.navigate("addTask") },
                     modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorScheme.secondary,   // Màu nền nút
+                        contentColor = colorScheme.primary        // Màu chữ trong nút
+                    ),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Thêm", tint = MaterialTheme.colorScheme.onPrimary)
+                    Icon(Icons.Default.Add, contentDescription = "Thêm", tint = textColor)
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         "Thêm công việc",
                         fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = textColor,
                         maxLines = 1
                     )
                 }
@@ -185,14 +189,18 @@ fun HomeScreen(viewModel: TaskViewModel, navController: NavHostController) {
                 Button(
                     onClick = { navController.navigate("stats") },
                     modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorScheme.secondary,   // Màu nền nút
+                        contentColor = colorScheme.primary        // Màu chữ trong nút
+                    ),
                     shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Default.BarChart, contentDescription = "Thống kê", tint = MaterialTheme.colorScheme.onPrimary)
+                    Icon(Icons.Default.BarChart, contentDescription = "Thống kê", tint = textColor)
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         "Thống kê",
                         fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = textColor,
                         maxLines = 1
                     )
                 }

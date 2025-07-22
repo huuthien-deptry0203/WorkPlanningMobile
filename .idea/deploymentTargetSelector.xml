@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="WorkPlanning.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-07-21T10:32:14.718910200Z">
+        <DropdownSelection timestamp="2025-07-21T13:48:09.906773900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCW212LQNN" />

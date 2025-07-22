@@ -2,28 +2,40 @@ package com.example.workplanning.ui.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.workplanning.viewmodel.TaskViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Icon
 
 @Composable
 fun StatsScreen(viewModel: TaskViewModel) {
@@ -41,12 +53,17 @@ fun StatsScreen(viewModel: TaskViewModel) {
         }.getOrDefault(false)
     }
 
-    val colorScheme = MaterialTheme.colorScheme
+    val mauNen = listOf(
+        colorScheme.surface,
+        colorScheme.background,
+        colorScheme.surface,
+    )
+    val textColor = colorScheme.primary
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorScheme.background),
+            .background(Brush.verticalGradient(mauNen)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -57,44 +74,44 @@ fun StatsScreen(viewModel: TaskViewModel) {
             verticalArrangement = Arrangement.Center
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.BarChart, contentDescription = null, tint = colorScheme.primary)
+                Icon(Icons.Default.BarChart, contentDescription = null, tint = textColor)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "Thống kê công việc",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    color = colorScheme.onBackground
+                    color = textColor
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Check, contentDescription = null, tint = colorScheme.primary)
+                Icon(Icons.Default.Check, contentDescription = null, tint = textColor)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "Đã hoàn thành: $completed",
-                    color = colorScheme.primary,
+                    color = textColor,
                     fontSize = 18.sp
                 )
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.AccessTime, contentDescription = null, tint = colorScheme.primary)
+                Icon(Icons.Default.AccessTime, contentDescription = null, tint = textColor)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "Chưa hoàn thành: $pending",
-                    color = colorScheme.onBackground,
+                    color = textColor,
                     fontSize = 18.sp
                 )
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.BarChart, contentDescription = null, tint = colorScheme.primary)
+                Icon(Icons.Default.BarChart, contentDescription = null, tint = textColor)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "Tổng công việc: $total",
-                    color = colorScheme.onBackground,
+                    color = textColor,
                     fontSize = 18.sp
                 )
             }
@@ -107,20 +124,20 @@ fun StatsScreen(viewModel: TaskViewModel) {
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Warning, contentDescription = null, tint = colorScheme.tertiary)
+                Icon(Icons.Default.Warning, contentDescription = null, tint = textColor)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "Công việc quá hạn: ${overdueTasks.size}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = colorScheme.onBackground
+                    color = textColor
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             if (overdueTasks.isEmpty()) {
-                Text("Không có công việc quá hạn", color = colorScheme.outline)
+                Text("Không có công việc quá hạn", color = textColor)
             } else {
                 overdueTasks.forEach {
                     Row(
@@ -150,7 +167,7 @@ fun DonutChart(completed: Int, total: Int) {
         Canvas(modifier = Modifier.size(160.dp)) {
             // Vòng ngoài
             drawArc(
-                color = colorScheme.surfaceVariant,
+                color = colorScheme.primary,
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
@@ -158,7 +175,7 @@ fun DonutChart(completed: Int, total: Int) {
             )
             // Vòng hoàn thành
             drawArc(
-                color = colorScheme.primary,
+                color = colorScheme.onBackground,
                 startAngle = -90f,
                 sweepAngle = angle,
                 useCenter = false,
@@ -169,7 +186,7 @@ fun DonutChart(completed: Int, total: Int) {
             text = "${(percentage * 100).toInt()}%",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = colorScheme.onBackground
+            color = colorScheme.primary
         )
     }
 }
