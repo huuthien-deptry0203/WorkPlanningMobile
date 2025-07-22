@@ -28,11 +28,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.workplanning.ui.screens.*
+import com.example.workplanning.ui.screens.AddTaskScreen
+import com.example.workplanning.ui.screens.HomeScreen
+import com.example.workplanning.ui.screens.LoginScreen
+import com.example.workplanning.ui.screens.RegisterScreen
+import com.example.workplanning.ui.screens.StatsScreen
+import com.example.workplanning.ui.screens.TaskDetailScreen
 import com.example.workplanning.ui.theme.TaskViewModelFactory
 import com.example.workplanning.ui.theme.UserViewModel
-import com.example.workplanning.viewmodel.TaskViewModel
 import com.example.workplanning.ui.theme.WorkPlanningTheme
+import com.example.workplanning.viewmodel.TaskViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {

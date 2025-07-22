@@ -2,28 +2,47 @@ package com.example.workplanning.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Pending
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.workplanning.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.*
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
@@ -43,6 +62,12 @@ fun HomeScreen(
     val todayTasks = taskViewModel.todayTasks.collectAsState().value
     val tasks = todayTasks.filter { it.username == username }
     val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    val mauNen = listOf(
+        colorScheme.surface,
+        colorScheme.background,
+        colorScheme.surface,
+        )
+    val textColor = colorScheme.primary
 
     if (username == null) {
         Text("Vui lòng đăng nhập!", color = Color.Red, modifier = Modifier.padding(16.dp))
@@ -52,9 +77,7 @@ fun HomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(listOf(Color(0xFF00C9FF), Color(0xFF92FE9D)))
-            ),
+            .background(Brush.verticalGradient(mauNen)),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
@@ -67,7 +90,7 @@ fun HomeScreen(
                 Icon(
                     imageVector = Icons.Default.CalendarToday,
                     contentDescription = "Calendar Icon",
-                    tint = Color.White,
+                    tint = colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -75,7 +98,7 @@ fun HomeScreen(
                     text = "Công việc của tôi",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = colorScheme.primary
                 )
             }
 
@@ -90,11 +113,14 @@ fun HomeScreen(
             ) {
                 items(tasks) { task ->
                     val isOverdue = !task.isDone && task.date < currentDate
+
                     val cardColor = when {
-                        task.isDone -> Color(0xFFB2FFB2) // Xanh lá nhạt
-                        isOverdue -> Color(0xFFFFCDD2)   // Đỏ nhạt
-                        else -> Color.White              // Trắng
+                        task.isDone -> colorScheme.onBackground
+                        isOverdue -> colorScheme.onErrorContainer
+                        else -> colorScheme.secondary
                     }
+
+
 
                     Card(
                         modifier = Modifier
@@ -106,17 +132,17 @@ fun HomeScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(task.title, fontSize = 20.sp, color = Color.Black)
+                            Text(task.title, fontSize = 20.sp, color = textColor)
                             Spacer(modifier = Modifier.height(4.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.CalendarToday,
                                     contentDescription = "Due Date",
-                                    tint = Color.Gray,
+                                    tint = textColor,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(task.date, fontSize = 14.sp, color = Color.DarkGray)
+                                Text(task.date, fontSize = 14.sp, color = textColor)
                             }
 
                             Spacer(modifier = Modifier.height(4.dp))
@@ -129,8 +155,11 @@ fun HomeScreen(
                                     isOverdue -> "ĐÃ QUÁ HẠN"
                                     else -> "Chưa hoàn thành"
                                 }
-                                val statusColor = if (task.isDone) Color(0xFF2E7D32)
-                                else if (isOverdue) Color.Red else Color.Gray
+                                val statusColor = when {
+                                    task.isDone -> colorScheme.onTertiary
+                                    isOverdue -> colorScheme.error
+                                    else -> textColor
+                                }
 
                                 Icon(
                                     imageVector = statusIcon,
@@ -153,9 +182,6 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
-// ...
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth(0.9f),
@@ -164,15 +190,18 @@ fun HomeScreen(
                 Button(
                     onClick = { navController.navigate("addTask") },
                     modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorScheme.secondary,   // Màu nền nút
+                        contentColor = colorScheme.primary        // Màu chữ trong nút
+                    ),
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Thêm", tint = Color.White)
+                    Icon(Icons.Default.Add, contentDescription = "Thêm", tint = textColor)
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         "Thêm công việc",
                         fontSize = 10.sp,
-                        color = Color.White,
+                        color = textColor,
                         maxLines = 1,
                         overflow = TextOverflow.Clip
                     )
@@ -183,21 +212,22 @@ fun HomeScreen(
                 Button(
                     onClick = { navController.navigate("stats") },
                     modifier = Modifier.weight(1f),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3))
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorScheme.secondary,
+                        contentColor = colorScheme.primary
+                    ),
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(Icons.Default.BarChart, contentDescription = "Thống kê", tint = Color.White)
+                    Icon(Icons.Default.BarChart, contentDescription = "Thống kê", tint = textColor)
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         "Thống kê",
                         fontSize = 10.sp,
-                        color = Color.White,
-                        maxLines = 1,
-                        overflow = TextOverflow.Clip
+                        color = textColor,
+                        maxLines = 1
                     )
                 }
             }
-
             Button(
                 onClick = {
                     userViewModel.logout()
@@ -217,7 +247,6 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text("Đăng xuất", fontSize = 12.sp, color = Color.White)
             }
-
         }
     }
 }
