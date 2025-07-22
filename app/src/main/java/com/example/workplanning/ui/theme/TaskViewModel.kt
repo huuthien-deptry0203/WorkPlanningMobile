@@ -1,13 +1,9 @@
-package com.example.workplanning.viewmodel
+package com.example.workplanning.ui.theme
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.workplanning.Task
-import com.example.workplanning.ui.theme.TaskStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import java.util.UUID
 
 class TaskViewModel(private val context: Context) : ViewModel() {
@@ -16,7 +12,6 @@ class TaskViewModel(private val context: Context) : ViewModel() {
     val todayTasks = _tasks.asStateFlow()
 
     init {
-        // Load dữ liệu từ file khi ViewModel khởi tạo
         loadTasks()
     }
 

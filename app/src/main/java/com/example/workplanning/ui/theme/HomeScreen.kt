@@ -1,4 +1,4 @@
-package com.example.workplanning.ui.screens
+package com.example.workplanning.ui.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,17 +39,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.workplanning.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.*
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Logout
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.workplanning.ui.theme.UserViewModel
 
 @Composable
 fun HomeScreen(
@@ -70,30 +64,44 @@ fun HomeScreen(
     val textColor = colorScheme.primary
 
     if (username == null) {
-        Text("Vui lòng đăng nhập!", color = Color.Red, modifier = Modifier.padding(16.dp))
+        Text(
+            "Vui lòng đăng nhập!",
+            color = Color.Red,
+            modifier = Modifier.padding(16.dp)
+        )
         return
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(mauNen)),
+            .background(
+                Brush.verticalGradient(mauNen)
+            ),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 32.dp, bottom = 60.dp, start = 16.dp, end = 16.dp),
+                .padding(
+                    top = 32.dp,
+                    bottom = 60.dp,
+                    start = 16.dp,
+                    end = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     imageVector = Icons.Default.CalendarToday,
                     contentDescription = "Calendar Icon",
                     tint = colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
+
                 Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
                     text = "Công việc của tôi",
                     fontSize = 26.sp,
@@ -120,41 +128,60 @@ fun HomeScreen(
                         else -> colorScheme.secondary
                     }
 
-
-
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
                                 navController.navigate("taskDetail/${task.id}")
                             },
-                        colors = CardDefaults.cardColors(containerColor = cardColor),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        colors = CardDefaults
+                            .cardColors(
+                                containerColor = cardColor
+                            ),
+                        elevation = CardDefaults
+                            .cardElevation(
+                                defaultElevation = 4.dp
+                            )
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(task.title, fontSize = 20.sp, color = textColor)
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                task.title,
+                                fontSize = 20.sp,
+                                color = textColor
+                            )
+
                             Spacer(modifier = Modifier.height(4.dp))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.CalendarToday,
                                     contentDescription = "Due Date",
                                     tint = textColor,
                                     modifier = Modifier.size(16.dp)
                                 )
+
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(task.date, fontSize = 14.sp, color = textColor)
                             }
 
                             Spacer(modifier = Modifier.height(4.dp))
 
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                val statusIcon =
-                                    if (task.isDone) Icons.Default.CheckCircle else Icons.Default.Pending
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val statusIcon = if (task.isDone)
+                                    Icons.Default.CheckCircle else Icons.Default.Pending
+
                                 val statusText = when {
                                     task.isDone -> "Hoàn thành"
                                     isOverdue -> "ĐÃ QUÁ HẠN"
                                     else -> "Chưa hoàn thành"
                                 }
+
                                 val statusColor = when {
                                     task.isDone -> colorScheme.onTertiary
                                     isOverdue -> colorScheme.error
@@ -167,7 +194,9 @@ fun HomeScreen(
                                     tint = statusColor,
                                     modifier = Modifier.size(16.dp)
                                 )
+
                                 Spacer(modifier = Modifier.width(4.dp))
+
                                 Text(
                                     statusText,
                                     fontSize = 14.sp,
@@ -240,7 +269,7 @@ fun HomeScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336))
             ) {
                 Icon(
-                    imageVector = Icons.Default.Logout,
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
                     contentDescription = "Đăng xuất",
                     tint = Color.White
                 )

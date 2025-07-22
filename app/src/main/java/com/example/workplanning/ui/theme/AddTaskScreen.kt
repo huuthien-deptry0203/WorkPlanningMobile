@@ -1,4 +1,4 @@
-package com.example.workplanning.ui.screens
+package com.example.workplanning.ui.theme
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,15 +38,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.workplanning.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import java.util.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarToday
-import com.example.workplanning.ui.theme.UserViewModel
-
 
 @Composable
 fun AddTaskScreen(
@@ -64,8 +59,8 @@ fun AddTaskScreen(
     var description by remember { mutableStateOf("") }
     var error by remember { mutableStateOf("") }
 
-    var hour by remember { mutableStateOf(calendar.get(Calendar.HOUR_OF_DAY)) }
-    var minute by remember { mutableStateOf(calendar.get(Calendar.MINUTE)) }
+    var hour by remember { mutableIntStateOf(calendar[Calendar.HOUR_OF_DAY]) }
+    var minute by remember { mutableIntStateOf(calendar[Calendar.MINUTE]) }
 
 
     val mauNen = listOf(
@@ -81,8 +76,8 @@ fun AddTaskScreen(
             { _, h, m ->
                 hour = h
                 minute = m
-                calendar.set(Calendar.HOUR_OF_DAY, h)
-                calendar.set(Calendar.MINUTE, m)
+              calendar[Calendar.HOUR_OF_DAY] = h
+              calendar[Calendar.MINUTE] = m
                 date = format.format(calendar.time)
             },
             hour, minute, true
@@ -93,12 +88,12 @@ fun AddTaskScreen(
         DatePickerDialog(
             context,
             { _: DatePicker, y: Int, m: Int, d: Int ->
-                calendar.set(y, m, d)
+                calendar[y, m] = d
                 timePickerDialog.show()
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+          calendar[Calendar.YEAR],
+          calendar[Calendar.MONTH],
+          calendar[Calendar.DAY_OF_MONTH]
         )
     }
 
@@ -200,20 +195,25 @@ fun AddTaskScreen(
             item {
                 Button(
                     onClick = {
-                        val dateRegex = Regex("\\d{4}-\\d{2}-\\d{2}")
+                        val dateRegex = Regex("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}")
                         val username = userViewModel.currentUsername
 
-                        if (username == null) {
-                            error = "Bạn chưa đăng nhập!"
-                        } else if (title.isBlank() || date.isBlank()) {
-                            error = "Vui lòng nhập đầy đủ tên và ngày"
-                        } else if (!date.matches(dateRegex)) {
-                            error = "Ngày không đúng định dạng YYYY-MM-DD HH:mm"
-                        } else {
-                            error = ""
-                            viewModel.addTask(title, date, description, username)
-                            navController.popBackStack()
+                      when {
+                        username == null -> {
+                          error = "Bạn chưa đăng nhập!"
                         }
+                        title.isBlank() || date.isBlank() -> {
+                          error = "Vui lòng nhập đầy đủ tên và ngày"
+                        }
+                        !date.matches(dateRegex) -> {
+                          error = "Ngày không đúng định dạng YYYY-MM-DD HH:mm"
+                        }
+                        else -> {
+                          error = ""
+                          viewModel.addTask(title, date, description, username)
+                          navController.popBackStack()
+                        }
+                      }
                     },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorScheme.secondary),

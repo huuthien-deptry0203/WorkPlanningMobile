@@ -1,4 +1,4 @@
-package com.example.workplanning.ui.screens
+package com.example.workplanning.ui.theme
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -19,11 +19,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -50,7 +50,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.workplanning.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -65,7 +64,7 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
     var editedTitle by remember { mutableStateOf(task?.title ?: "") }
     var editedDescription by remember { mutableStateOf(task?.description ?: "") }
     var editedDate by remember { mutableStateOf(task?.date ?: "") }
-    var isDone by remember { mutableStateOf(task?.isDone ?: false) }
+    var isDone by remember { mutableStateOf(task?.isDone == true) }
 
     val context = LocalContext.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -74,13 +73,13 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
         TimePickerDialog(
             context,
             { _, hour: Int, minute: Int ->
-                calendar.set(Calendar.HOUR_OF_DAY, hour)
-                calendar.set(Calendar.MINUTE, minute)
+                calendar[Calendar.HOUR_OF_DAY] = hour
+              calendar[Calendar.MINUTE] = minute
                 editedDate = dateFormatter.format(calendar.time)
                 onTimeSelected()
             },
-            calendar.get(Calendar.HOUR_OF_DAY),
-            calendar.get(Calendar.MINUTE),
+          calendar[Calendar.HOUR_OF_DAY],
+          calendar[Calendar.MINUTE],
             true
         ).show()
     }
@@ -88,12 +87,12 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
     val datePickerDialog = DatePickerDialog(
         context,
         { _: DatePicker, y: Int, m: Int, d: Int ->
-            calendar.set(y, m, d)
+            calendar[y, m] = d
             showTimePicker {}
         },
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)
+      calendar[Calendar.YEAR],
+      calendar[Calendar.MONTH],
+      calendar[Calendar.DAY_OF_MONTH]
     )
     val mauNen = listOf(
         colorScheme.surface,
@@ -176,7 +175,7 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
                     onValueChange = { editedDescription = it },
                     label = { Text("Mô tả công việc", color = textColor) },
                     leadingIcon = {
-                        Icon(Icons.Default.Notes, contentDescription = null, tint = textColor)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.Notes, contentDescription = null, tint = textColor)
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
