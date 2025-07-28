@@ -2,6 +2,7 @@ package com.example.workplanning.ui.theme
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.example.workplanning.data.TaskUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.UUID
@@ -10,6 +11,9 @@ class TaskViewModel(private val context: Context) : ViewModel() {
 
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
     val todayTasks = _tasks.asStateFlow()
+
+    private val _uiState = MutableStateFlow(TaskUiState())
+    val uiState = _uiState.asStateFlow()
 
     init {
         loadTasks()
@@ -26,21 +30,45 @@ class TaskViewModel(private val context: Context) : ViewModel() {
 
     fun getTaskById(taskId: String): Task? = _tasks.value.find { it.id == taskId }
 
-    fun addTask(title: String, date: String, description: String, username: String) {
-        val newTask = Task(
+    // --- UI State Handlers ---
+    fun onTitleChange(newTitle: String) {
+        _uiState.value = _uiState.value.copy(title = newTitle)
+    }
+
+    fun onDateChange(newDate: String) {
+        _uiState.value = _uiState.value.copy(date = newDate)
+    }
+
+    fun onDescriptionChange(newDesc: String) {
+        _uiState.value = _uiState.value.copy(description = newDesc)
+    }
+
+    fun setError(message: String) {
+        _uiState.value = _uiState.value.copy(error = message)
+    }
+
+    fun clearUiState() {
+        _uiState.value = TaskUiState()
+    }
+
+    // --- Add Task từ UiState ---
+    fun addTask(username: String) {
+        val task = Task(
             id = UUID.randomUUID().toString(),
-            title = title,
-            date = date,
-            description = description,
+            title = _uiState.value.title,
+            date = _uiState.value.date,
+            description = _uiState.value.description,
             username = username
         )
-        _tasks.value = _tasks.value + newTask
+        _tasks.value = _tasks.value + task
         saveTasks()
+        clearUiState() // reset input sau khi thêm
     }
 
     fun updateTask(id: String, title: String, date: String, description: String, isDone: Boolean) {
         _tasks.value = _tasks.value.map {
-            if (it.id == id) it.copy(title = title, date = date, description = description, isDone = isDone) else it
+            if (it.id == id) it.copy(title = title, date = date, description = description, isDone = isDone)
+            else it
         }
         saveTasks()
     }
@@ -49,4 +77,10 @@ class TaskViewModel(private val context: Context) : ViewModel() {
         _tasks.value = _tasks.value.filter { it.id != id }
         saveTasks()
     }
+
+    fun onDoneChange(done: Boolean) {
+        _uiState.value = _uiState.value.copy(isDone = done)
+    }
+
 }
+

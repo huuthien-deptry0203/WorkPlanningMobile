@@ -24,10 +24,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,20 +50,15 @@ fun AddTaskScreen(
     navController: NavHostController,
     userViewModel: UserViewModel
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val colorScheme = MaterialTheme.colorScheme
 
-    val calendar = remember { Calendar.getInstance() }
+    val calendar = rememberSaveable { Calendar.getInstance() }
     val format = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
-    var date by remember { mutableStateOf("") }
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf("") }
-
-    var hour by remember { mutableIntStateOf(calendar[Calendar.HOUR_OF_DAY]) }
-    var minute by remember { mutableIntStateOf(calendar[Calendar.MINUTE]) }
-
+    var hour by rememberSaveable { mutableIntStateOf(calendar[Calendar.HOUR_OF_DAY]) }
+    var minute by rememberSaveable { mutableIntStateOf(calendar[Calendar.MINUTE]) }
 
     val mauNen = listOf(
         MaterialTheme.colorScheme.surface,
@@ -76,9 +73,9 @@ fun AddTaskScreen(
             { _, h, m ->
                 hour = h
                 minute = m
-              calendar[Calendar.HOUR_OF_DAY] = h
-              calendar[Calendar.MINUTE] = m
-                date = format.format(calendar.time)
+                calendar[Calendar.HOUR_OF_DAY] = h
+                calendar[Calendar.MINUTE] = m
+                viewModel.onDateChange(format.format(calendar.time))
             },
             hour, minute, true
         )
@@ -88,12 +85,12 @@ fun AddTaskScreen(
         DatePickerDialog(
             context,
             { _: DatePicker, y: Int, m: Int, d: Int ->
-                calendar[y, m] = d
+                calendar.set(y, m, d)
                 timePickerDialog.show()
             },
-          calendar[Calendar.YEAR],
-          calendar[Calendar.MONTH],
-          calendar[Calendar.DAY_OF_MONTH]
+            calendar[Calendar.YEAR],
+            calendar[Calendar.MONTH],
+            calendar[Calendar.DAY_OF_MONTH]
         )
     }
 
@@ -121,8 +118,8 @@ fun AddTaskScreen(
 
             item {
                 OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
+                    value = uiState.title,
+                    onValueChange = { viewModel.onTitleChange(it) },
                     label = { Text("Tên công việc", color = textColor) },
                     textStyle = TextStyle(fontSize = 18.sp, color = textColor),
                     singleLine = true,
@@ -140,7 +137,7 @@ fun AddTaskScreen(
 
             item {
                 OutlinedTextField(
-                    value = date,
+                    value = uiState.date,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Hạn công việc", color = textColor) },
@@ -169,8 +166,8 @@ fun AddTaskScreen(
 
             item {
                 OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
+                    value = uiState.description,
+                    onValueChange = { viewModel.onDescriptionChange(it) },
                     label = { Text("Mô tả công việc") },
                     textStyle = TextStyle(fontSize = 16.sp, color = textColor),
                     modifier = Modifier.fillMaxWidth(),
@@ -186,8 +183,8 @@ fun AddTaskScreen(
             }
 
             item {
-                AnimatedVisibility(visible = error.isNotEmpty()) {
-                    Text(error, color = colorScheme.error, fontSize = 14.sp)
+                AnimatedVisibility(visible = !uiState.error.isNullOrBlank()) {
+                    Text(uiState.error ?: "", color = colorScheme.error, fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -198,22 +195,22 @@ fun AddTaskScreen(
                         val dateRegex = Regex("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}")
                         val username = userViewModel.currentUsername
 
-                      when {
-                        username == null -> {
-                          error = "Bạn chưa đăng nhập!"
+                        when {
+                            username == null -> {
+                                viewModel.setError("Bạn chưa đăng nhập!")
+                            }
+                            uiState.title.isBlank() || uiState.date.isBlank() -> {
+                                viewModel.setError("Vui lòng nhập đầy đủ tên và ngày")
+                            }
+                            !uiState.date.matches(dateRegex) -> {
+                                viewModel.setError("Ngày không đúng định dạng YYYY-MM-DD HH:mm")
+                            }
+                            else -> {
+                                viewModel.setError("")
+                                viewModel.addTask(username)
+                                navController.popBackStack()
+                            }
                         }
-                        title.isBlank() || date.isBlank() -> {
-                          error = "Vui lòng nhập đầy đủ tên và ngày"
-                        }
-                        !date.matches(dateRegex) -> {
-                          error = "Ngày không đúng định dạng YYYY-MM-DD HH:mm"
-                        }
-                        else -> {
-                          error = ""
-                          viewModel.addTask(title, date, description, username)
-                          navController.popBackStack()
-                        }
-                      }
                     },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colorScheme.secondary),
@@ -226,3 +223,4 @@ fun AddTaskScreen(
         }
     }
 }
+
