@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.remember
@@ -79,18 +80,19 @@ class MainActivity : ComponentActivity() {
                                 AddTaskScreen(viewModel, navController, userViewModel)
                             }
                             composable("stats") {
-                                StatsScreen(viewModel, userViewModel)
+                                StatsScreen(viewModel, navController, userViewModel)
                             }
                         }
                     } else {
+                        val mauNen = listOf(
+                            colorScheme.surface,
+                            colorScheme.background,
+                            colorScheme.surface,
+                        )
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(
-                                    Brush.verticalGradient(
-                                        listOf(Color(0xFF4A00E0), Color(0xFF8E2DE2))
-                                    )
-                                ),
+                                .background(Brush.verticalGradient(mauNen)),
                             contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {

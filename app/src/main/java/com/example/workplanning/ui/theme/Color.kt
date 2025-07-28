@@ -3,7 +3,7 @@ package com.example.workplanning.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val xamden = Color(0xFF7D7D7D)
-val xamtrang = Color(0xFFC2C2C2)
+val xamtrang = Color(0xFFC1C1C1)
 
 
 
@@ -16,7 +16,7 @@ val buttondark = Color(0xFF2C2C2C)
 val errorlight = Color(0xFF660000)
 val errordark = Color(0xFFFF0000)
 
-val nendark = Color(0xFF000000)
+val nendark = Color(0xFF111111)
 val nenlight = Color(0xFFFFFFFF)
 
 

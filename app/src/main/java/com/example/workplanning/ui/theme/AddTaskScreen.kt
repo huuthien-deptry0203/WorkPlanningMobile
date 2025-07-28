@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -46,11 +48,11 @@ import java.util.Locale
 
 @Composable
 fun AddTaskScreen(
-    viewModel: TaskViewModel,
+    taskViewModel: TaskViewModel,
     navController: NavHostController,
     userViewModel: UserViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by taskViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val colorScheme = MaterialTheme.colorScheme
 
@@ -75,7 +77,7 @@ fun AddTaskScreen(
                 minute = m
                 calendar[Calendar.HOUR_OF_DAY] = h
                 calendar[Calendar.MINUTE] = m
-                viewModel.onDateChange(format.format(calendar.time))
+                taskViewModel.onDateChange(format.format(calendar.time))
             },
             hour, minute, true
         )
@@ -119,7 +121,7 @@ fun AddTaskScreen(
             item {
                 OutlinedTextField(
                     value = uiState.title,
-                    onValueChange = { viewModel.onTitleChange(it) },
+                    onValueChange = { taskViewModel.onTitleChange(it) },
                     label = { Text("Tên công việc", color = textColor) },
                     textStyle = TextStyle(fontSize = 18.sp, color = textColor),
                     singleLine = true,
@@ -167,7 +169,7 @@ fun AddTaskScreen(
             item {
                 OutlinedTextField(
                     value = uiState.description,
-                    onValueChange = { viewModel.onDescriptionChange(it) },
+                    onValueChange = { taskViewModel.onDescriptionChange(it) },
                     label = { Text("Mô tả công việc") },
                     textStyle = TextStyle(fontSize = 16.sp, color = textColor),
                     modifier = Modifier.fillMaxWidth(),
@@ -197,28 +199,46 @@ fun AddTaskScreen(
 
                         when {
                             username == null -> {
-                                viewModel.setError("Bạn chưa đăng nhập!")
+                                taskViewModel.setError("Bạn chưa đăng nhập!")
                             }
                             uiState.title.isBlank() || uiState.date.isBlank() -> {
-                                viewModel.setError("Vui lòng nhập đầy đủ tên và ngày")
+                                taskViewModel.setError("Vui lòng nhập đầy đủ tên và ngày")
                             }
                             !uiState.date.matches(dateRegex) -> {
-                                viewModel.setError("Ngày không đúng định dạng YYYY-MM-DD HH:mm")
+                                taskViewModel.setError("Ngày không đúng định dạng YYYY-MM-DD HH:mm")
                             }
                             else -> {
-                                viewModel.setError("")
-                                viewModel.addTask(username)
+                                taskViewModel.setError("")
+                                taskViewModel.addTask(username)
                                 navController.popBackStack()
                             }
                         }
                     },
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.secondary),
-                    elevation = ButtonDefaults.elevatedButtonElevation(6.dp)
+                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.onBackground),
+                    modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
+                    Icon(Icons.Default.Add, contentDescription = "Thêm", tint = textColor)
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text("Thêm công việc", color = textColor)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        taskViewModel.clearUiState()
+                        navController.popBackStack()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                    modifier = Modifier.fillMaxWidth(0.9f)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Quay lại",
+                        tint = textColor
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Quay lại", color = textColor)
+                }
             }
         }
     }

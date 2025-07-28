@@ -2,6 +2,7 @@ package com.example.workplanning.ui.theme
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.example.workplanning.data.Task
 import com.example.workplanning.data.TaskUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,6 +44,10 @@ class TaskViewModel(private val context: Context) : ViewModel() {
         _uiState.value = _uiState.value.copy(description = newDesc)
     }
 
+    fun onDoneChange(done: Boolean) {
+        _uiState.value = _uiState.value.copy(isDone = done)
+    }
+
     fun setError(message: String) {
         _uiState.value = _uiState.value.copy(error = message)
     }
@@ -77,10 +82,5 @@ class TaskViewModel(private val context: Context) : ViewModel() {
         _tasks.value = _tasks.value.filter { it.id != id }
         saveTasks()
     }
-
-    fun onDoneChange(done: Boolean) {
-        _uiState.value = _uiState.value.copy(isDone = done)
-    }
-
 }
 
