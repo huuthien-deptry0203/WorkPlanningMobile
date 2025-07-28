@@ -44,6 +44,7 @@ import java.util.Date
 import java.util.Locale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun HomeScreen(
@@ -259,14 +260,18 @@ fun HomeScreen(
             }
             Button(
                 onClick = {
+                    taskViewModel.clearUiState()
                     userViewModel.logout()
                     navController.navigate("login") {
                         popUpTo("home") { inclusive = true }
                     }
                 },
-                modifier = Modifier.width(140.dp),
                 shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336))
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorScheme.onErrorContainer,
+                    contentColor = colorScheme.primary
+                ),
+                modifier = Modifier.fillMaxWidth(0.9f)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Logout,

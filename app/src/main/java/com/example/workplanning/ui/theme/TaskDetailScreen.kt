@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Delete
@@ -37,6 +38,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,8 +57,14 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController, taskId: String?) {
-    val task = remember(taskId) { viewModel.getTaskById(taskId ?: "") }
+fun TaskDetailScreen(
+    taskViewModel: TaskViewModel,
+    navController: NavHostController,
+    taskId: String?
+) {
+    val uiState by taskViewModel.uiState.collectAsState()
+
+    val task = remember(taskId) { taskViewModel.getTaskById(taskId ?: "") }
 
     val calendar = remember { Calendar.getInstance() }
     val dateFormatter = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()) }
@@ -195,8 +203,8 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
                     modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
                     Checkbox(
-                        checked = isDone,
-                        onCheckedChange = { isDone = it },
+                        checked = uiState.isDone,
+                        onCheckedChange = { taskViewModel.onDoneChange(it) },
                         colors = CheckboxDefaults.colors(checkedColor = colorScheme.onBackground)
                     )
                     Text("Đã hoàn thành", color = colorScheme.onTertiary)
@@ -204,7 +212,7 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
 
                 Button(
                     onClick = {
-                        viewModel.updateTask(task.id, editedTitle, editedDate, editedDescription, isDone)
+                        taskViewModel.updateTask(task.id, editedTitle, editedDate, editedDescription, isDone)
                         navController.popBackStack()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = colorScheme.onBackground),
@@ -217,7 +225,7 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
 
                 Button(
                     onClick = {
-                        viewModel.deleteTask(task.id)
+                        taskViewModel.deleteTask(task.id)
                         navController.popBackStack()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = colorScheme.onErrorContainer),
@@ -226,6 +234,23 @@ fun TaskDetailScreen(viewModel: TaskViewModel, navController: NavHostController,
                     Icon(Icons.Default.Delete, contentDescription = null, tint = textColor)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Xoá công việc", color = textColor)
+                }
+
+                Button(
+                    onClick = {
+                        taskViewModel.clearUiState()
+                        navController.popBackStack()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = colorScheme.secondary),
+                    modifier = Modifier.fillMaxWidth(0.9f)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Quay lại",
+                        tint = textColor
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Quay lại", color = textColor)
                 }
             }
         }
