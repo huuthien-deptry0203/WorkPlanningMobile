@@ -1,5 +1,6 @@
 package com.example.workplanning
 
+import android.R.attr.padding
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,8 +9,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -55,7 +60,12 @@ class MainActivity : ComponentActivity() {
                     if (userViewModel.isInitialized) {
                         val startDestination = if (userViewModel.currentUsername != null) "home" else "login"
 
-                        NavHost(navController = navController, startDestination = startDestination) {
+                        NavHost(
+                            navController = navController,
+                            startDestination = startDestination,
+                            modifier = Modifier
+                                .padding(WindowInsets.systemBars.asPaddingValues())
+                        ) {
                             composable("login") {
                                 LoginScreen(navController, userViewModel)
                             }
