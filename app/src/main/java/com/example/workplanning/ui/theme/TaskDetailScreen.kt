@@ -224,7 +224,12 @@ fun TaskDetailScreen(
                         },
                         colors = CheckboxDefaults.colors(checkedColor = colorScheme.onBackground)
                     )
-                    Text("Đã hoàn thành", color = colorScheme.onTertiary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (isDone) "Đã hoàn thành" else "Chưa hoàn thành",
+                        color = textColor,
+                        fontSize = 16.sp
+                    )
                 }
 
                 Button(
