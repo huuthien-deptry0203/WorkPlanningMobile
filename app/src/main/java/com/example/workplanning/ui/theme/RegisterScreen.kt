@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,7 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -36,7 +39,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(navController: NavHostController, userViewModel: UserViewModel) {
-    var username by rememberSaveable { mutableStateOf("") }
+//    var username by rememberSaveable { mutableStateOf("") }
+    var username by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(""))
+    }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -82,6 +88,9 @@ fun RegisterScreen(navController: NavHostController, userViewModel: UserViewMode
                     label = { Text("Username", color = colorScheme.primary) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = colorScheme.primary,
                         unfocusedTextColor =  colorScheme.primary,
@@ -131,7 +140,7 @@ fun RegisterScreen(navController: NavHostController, userViewModel: UserViewMode
 
                 Button(
                     onClick = {
-                        if (username.length < 4) {
+                        if (username.text.length < 4) {
                             isError = true
                             errorMessage = "Tên người dùng quá ngắn"
                             return@Button
@@ -147,7 +156,7 @@ fun RegisterScreen(navController: NavHostController, userViewModel: UserViewMode
                             return@Button
                         }
 
-                        val success = userViewModel.register(username, password)
+                        val success = userViewModel.register(username.text, password)
                         if (!success) {
                             isError = true
                             errorMessage = "Tên người dùng đã tồn tại"

@@ -224,6 +224,7 @@ fun TaskDetailScreen(
                         },
                         colors = CheckboxDefaults.colors(checkedColor = colorScheme.onBackground)
                     )
+                    Text("Đã hoàn thành", color = colorScheme.onTertiary)
                 }
 
                 Button(
