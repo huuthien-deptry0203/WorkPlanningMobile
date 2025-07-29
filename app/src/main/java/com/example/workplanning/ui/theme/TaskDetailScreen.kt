@@ -38,10 +38,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,18 +66,31 @@ fun TaskDetailScreen(
 ) {
     val uiState by taskViewModel.uiState.collectAsState()
 
-    val task = remember(taskId) { taskViewModel.getTaskById(taskId ?: "") }
+//    val task = remember(taskId) { taskViewModel.getTaskById(taskId ?: "") }
+    val task = taskViewModel.getTaskById(taskId ?: "")
 
     val calendar = remember { Calendar.getInstance() }
     val dateFormatter = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()) }
 
-    var editedTitle by remember { mutableStateOf(task?.title ?: "") }
-    var editedDescription by remember { mutableStateOf(task?.description ?: "") }
-    var editedDate by remember { mutableStateOf(task?.date ?: "") }
-    var isDone by remember { mutableStateOf(task?.isDone == true) }
+    var editedTitle by rememberSaveable { mutableStateOf(task?.title ?: "") }
+    var editedDescription by rememberSaveable { mutableStateOf(task?.description ?: "") }
+    var editedDate by rememberSaveable { mutableStateOf(task?.date ?: "") }
+    var isDone by rememberSaveable { mutableStateOf(task?.isDone == true) }
 
     val context = LocalContext.current
     val interactionSource = remember { MutableInteractionSource() }
+
+    var isInitialized by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(task) {
+        if (task != null && !isInitialized) {
+            editedTitle = task.title
+            editedDescription = task.description
+            editedDate = task.date
+            isDone = task.isDone
+            isInitialized = true
+        }
+    }
 
     fun showTimePicker(onTimeSelected: () -> Unit) {
         TimePickerDialog(
@@ -203,11 +218,12 @@ fun TaskDetailScreen(
                     modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
                     Checkbox(
-                        checked = uiState.isDone,
-                        onCheckedChange = { taskViewModel.onDoneChange(it) },
+                        checked = isDone,
+                        onCheckedChange = {
+                            isDone = it
+                        },
                         colors = CheckboxDefaults.colors(checkedColor = colorScheme.onBackground)
                     )
-                    Text("Đã hoàn thành", color = colorScheme.onTertiary)
                 }
 
                 Button(

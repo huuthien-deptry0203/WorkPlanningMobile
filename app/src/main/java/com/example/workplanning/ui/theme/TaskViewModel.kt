@@ -44,9 +44,9 @@ class TaskViewModel(private val context: Context) : ViewModel() {
         _uiState.value = _uiState.value.copy(description = newDesc)
     }
 
-    fun onDoneChange(done: Boolean) {
-        _uiState.value = _uiState.value.copy(isDone = done)
-    }
+//    fun onDoneChange(done: Boolean) {
+//        _uiState.value = _uiState.value.copy(isDone = done)
+//    }
 
     fun setError(message: String) {
         _uiState.value = _uiState.value.copy(error = message)
